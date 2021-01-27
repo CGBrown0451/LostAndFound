@@ -14,9 +14,8 @@ APlayerCharacter::APlayerCharacter()
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(GetCapsuleComponent());
-	CameraComponent->SetRelativeLocation(FVector(0.0f,1.75f,64.f));
+	CameraComponent->SetRelativeLocation(FVector(0.0f,0.0f,64.f));
 	CameraComponent->bUsePawnControlRotation = true;
-
 
 }
 

@@ -26,15 +26,22 @@ private:
 	virtual void SetupInputComponent() override;
 
 	//Misc Movement Functions
+	UFUNCTION()
 	void MoveX(float mag);
+	UFUNCTION()
 	void MoveY(float mag);
 
+	UFUNCTION()
 	void MouseLookX(float mag);
+	UFUNCTION()
 	void MouseLookY(float mag);
 
+	UFUNCTION()
 	void JoyLookX(float mag);
+	UFUNCTION()
 	void JoyLookY(float mag);
 
+	UFUNCTION()
 	void Interact();
 	
 };
