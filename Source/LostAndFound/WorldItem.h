@@ -41,6 +41,6 @@ public:
 
 	UPROPERTY()
 	UInteractInfo* InteractInfo;
-	virtual void Interact_Implementation() override;
+	virtual void Interact_Implementation(AMyPlayerController* Controller) override;
     virtual UInteractInfo* GetInteractInfo_Implementation() override;
 };

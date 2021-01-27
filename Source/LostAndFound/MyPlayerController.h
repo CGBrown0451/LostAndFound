@@ -3,8 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "InteractInterface.h"
+#include "Item.h"
 #include "GameFramework/PlayerController.h"
 #include "MyPlayerController.generated.h"
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryChanged);
 
 /**
  * 
@@ -15,10 +21,24 @@ class LOSTANDFOUND_API AMyPlayerController : public APlayerController
 	GENERATED_BODY()
 public:
 
+	AMyPlayerController();
+
 	ACharacter* PossessedChar;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TMap<FName, int32> ItemInventory;
+	UFUNCTION(BlueprintCallable)
+	void AddToInventory(UItem* Item);
+	FInventoryChanged OnInventoryChange;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	AActor* LastHoveredOverActor;
+	UPROPERTY(BlueprintReadOnly)
+	float LastHoverTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float HoverCoyoteTime;
+	UPROPERTY(BlueprintReadOnly)
+	UInteractInfo* LastHoverData;
 	
 private:
 	//Setting up the Camera and Enabling the Character Movement

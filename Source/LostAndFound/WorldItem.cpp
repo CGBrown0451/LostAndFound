@@ -3,6 +3,8 @@
 
 #include "WorldItem.h"
 
+
+#include "MyPlayerController.h"
 #include "RHI.h"
 
 // Sets default values
@@ -49,9 +51,10 @@ bool AWorldItem::CreateInternalItemFromName(UDataTable* FromTable, FName InName)
 	return false;
 }
 
-void AWorldItem::Interact_Implementation()
+void AWorldItem::Interact_Implementation(AMyPlayerController* Controller)
 {
-	
+	Controller->AddToInventory(InternalItem);
+	InteractInfo->DestroyAfterInteract = true;
 }
 
 UInteractInfo* AWorldItem::GetInteractInfo_Implementation()

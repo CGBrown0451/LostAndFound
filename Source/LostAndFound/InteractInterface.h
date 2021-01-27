@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "InteractInterface.generated.h"
 
+class AMyPlayerController;
 UCLASS(BlueprintType)
 class LOSTANDFOUND_API UInteractInfo : public UObject
 {
@@ -17,6 +18,8 @@ class LOSTANDFOUND_API UInteractInfo : public UObject
 	bool HasTooltip;
 	UPROPERTY(BlueprintReadOnly)
 	FString Tooltip;
+	UPROPERTY(BlueprintReadOnly)
+	bool DestroyAfterInteract;
 };
 
 // This class does not need to be modified.
@@ -35,7 +38,7 @@ class LOSTANDFOUND_API IInteractInterface
 public:
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Interact();
+	void Interact(AMyPlayerController* Controller);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
     UInteractInfo* GetInteractInfo();
 public:
