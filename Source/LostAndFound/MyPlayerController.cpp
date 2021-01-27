@@ -3,6 +3,8 @@
 
 #include "MyPlayerController.h"
 
+
+#include "InteractInterface.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -17,6 +19,26 @@ void AMyPlayerController::SetupInputComponent()
 
 	InputComponent->BindAxis(TEXT("JoyLookX"),this,&AMyPlayerController::JoyLookX);
 	InputComponent->BindAxis(TEXT("JoyLookY"),this,&AMyPlayerController::JoyLookY);
+}
+
+void AMyPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	FCollisionShape Shape = FCollisionShape::MakeBox(FVector{10, 10, 10});
+	FHitResult SweepResult;
+	FVector Start = PossessedChar->GetActorLocation();
+	FVector End = Start + PlayerCameraManager->GetActorForwardVector() * 300.0f;
+	// TODO: Doesn't work, look into it
+	bool HasHit = GetWorld()->SweepSingleByChannel(SweepResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_EngineTraceChannel1, Shape);
+	if (HasHit)
+	{
+		if (SweepResult.GetActor() && SweepResult.GetActor()->GetClass()->ImplementsInterface(UInteractInterface::StaticClass()))
+		{
+			UInteractInfo* Info = IInteractInterface::Execute_GetInteractInfo(SweepResult.GetActor());
+			if (Info)
+				UE_LOG(LogTemp, Display, TEXT("Hovering: %s"), *Info->Tooltip)
+		}
+	}
 }
 
 void AMyPlayerController::OnPossess(APawn* InPawn)

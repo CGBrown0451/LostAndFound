@@ -3,6 +3,8 @@
 
 #include "WorldItem.h"
 
+#include "RHI.h"
+
 // Sets default values
 AWorldItem::AWorldItem()
 {
@@ -12,13 +14,18 @@ AWorldItem::AWorldItem()
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	MeshComponent->SetupAttachment(RootComponent);
 	MeshComponent->ResetRelativeTransform();
+	MeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 }
 
 // Called when the game starts or when spawned
 void AWorldItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	InteractInfo = NewObject<UInteractInfo>(this);
+	if (LastDataFound)
+	{
+		InteractInfo->Tooltip = LastDataFound->DisplayName.ToString();
+	}
 }
 
 // Called every frame
@@ -40,5 +47,15 @@ bool AWorldItem::CreateInternalItemFromName(UDataTable* FromTable, FName InName)
 		return true;
 	}
 	return false;
+}
+
+void AWorldItem::Interact_Implementation()
+{
+	
+}
+
+UInteractInfo* AWorldItem::GetInteractInfo_Implementation()
+{
+	return InteractInfo;
 }
 

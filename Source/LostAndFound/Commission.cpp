@@ -20,6 +20,22 @@ bool UCommission::GetRemainingTime(float& RemainingTime, bool& TimeRanOut)
 	return _HasStartedTime;
 }
 
+bool UCommission::InventoryHasAllItems(TMap<FName, int32>& OutsideInventory)
+{
+	for (auto& Item : RequiredItems)
+	{
+		auto Found = OutsideInventory.Find(Item.Key);
+		if (Found)
+		{
+			if (Item.Value > *Found)
+				return false;
+		}
+		else
+			return false;
+	}
+	return true;
+}
+
 float UCommission::SetBonusTimeReward(float In)
 {
 	_TimeReward = In;
@@ -41,4 +57,19 @@ bool UCommission::StartTimingCommission()
 		return true;
 	}
 	return false;
+}
+
+void UCommission::RemoveRequiredItemsFromInventory(TMap<FName, int32>& OutsideInventory)
+{
+	for (auto& Item : RequiredItems)
+	{
+		auto Found = OutsideInventory.Find(Item.Key);
+		if (Found)
+		{
+			if (Item.Value < *Found)
+				OutsideInventory.Add(Item.Key, *Found - Item.Value);
+			else 
+				OutsideInventory.Remove(Item.Key);
+		}
+	}
 }

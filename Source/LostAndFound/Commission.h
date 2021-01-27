@@ -28,6 +28,8 @@ class LOSTANDFOUND_API UCommission : public UObject
     float GetTimeLimit();
 	UFUNCTION(BlueprintCallable, BlueprintPure)
     bool GetRemainingTime(float& RemainingTime, bool& TimeRanOut);
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+    bool InventoryHasAllItems(TMap<FName, int32>& OutsideInventory);
 	
 	UFUNCTION(BlueprintCallable)
     float SetBonusTimeReward(float In);
@@ -35,4 +37,6 @@ class LOSTANDFOUND_API UCommission : public UObject
     float SetTimeLimit(float In);
 	UFUNCTION(BlueprintCallable)
     bool StartTimingCommission();
+	UFUNCTION(BlueprintCallable)
+    void RemoveRequiredItemsFromInventory(TMap<FName, int32>& OutsideInventory);
 };

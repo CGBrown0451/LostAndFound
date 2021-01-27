@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+
+#include "InteractInterface.h"
 #include "Item.h"
 #include "ItemLibrary.h"
 #include "Engine/DataTable.h"
@@ -11,7 +13,7 @@
 #include "WorldItem.generated.h"
 
 UCLASS()
-class LOSTANDFOUND_API AWorldItem : public AActor
+class LOSTANDFOUND_API AWorldItem : public AActor, public IInteractInterface
 {
 	GENERATED_BODY()
 	
@@ -36,4 +38,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool CreateInternalItemFromName(UDataTable* FromTable, FName InName);
+
+	UPROPERTY()
+	UInteractInfo* InteractInfo;
+	virtual void Interact_Implementation() override;
+    virtual UInteractInfo* GetInteractInfo_Implementation() override;
 };

@@ -9,21 +9,24 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class LOSTANDFOUND_API AMyPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
 
 	ACharacter* PossessedChar;
-
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TMap<FName, int32> ItemInventory;
 	
 private:
 	//Setting up the Camera and Enabling the Character Movement
 	virtual void OnPossess(APawn* InPawn) override;
 	//Binding movement and action functions
 	virtual void SetupInputComponent() override;
+
+	virtual void Tick(float DeltaTime) override;
 
 	//Misc Movement Functions
 	UFUNCTION()

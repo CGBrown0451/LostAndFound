@@ -8,7 +8,7 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class LOSTANDFOUND_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
