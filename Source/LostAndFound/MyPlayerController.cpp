@@ -21,22 +21,26 @@ void AMyPlayerController::SetupInputComponent()
 
 void AMyPlayerController::OnPossess(APawn* InPawn)
 {
+	Super::OnPossess(InPawn);
 	PossessedChar = Cast<ACharacter>(InPawn);
 	if(PossessedChar)
 	{
 		PossessedChar->GetCharacterMovement()->SetActive(true,true);
 		SetViewTargetWithBlend(PossessedChar,0.0f,VTBlend_Linear);
+	}else
+	{
+		GEngine->AddOnScreenDebugMessage(-1,100.0f,FColor::Red,"FU");
 	}
 }
 
 void AMyPlayerController::MoveX(float mag)
 {
-	PossessedChar->AddMovementInput(PossessedChar->GetActorForwardVector() * mag);
+	PossessedChar->AddMovementInput(PossessedChar->GetActorRightVector() * mag, 1.0f, false);
 }
 
 void AMyPlayerController::MoveY(float mag)
 {
-	PossessedChar->AddMovementInput(PossessedChar->GetActorRightVector() * mag);
+	PossessedChar->AddMovementInput(PossessedChar->GetActorForwardVector() * mag, 1.0f, false);
 }
 
 void AMyPlayerController::MouseLookX(float mag)
