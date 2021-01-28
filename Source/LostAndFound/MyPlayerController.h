@@ -65,6 +65,9 @@ private:
 	void JoyLookY(float mag);
 
 	UFUNCTION()
+    void Jump();
+
+	UFUNCTION()
 	void Interact();
 	
 };

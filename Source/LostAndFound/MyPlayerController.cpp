@@ -30,6 +30,7 @@ void AMyPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 	InputComponent->BindAction(TEXT("Interact"), EInputEvent::IE_Pressed, this, &AMyPlayerController::Interact);
+	InputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AMyPlayerController::Jump);
 	
 	InputComponent->BindAxis(TEXT("MoveX"),this,&AMyPlayerController::MoveX);
 	InputComponent->BindAxis(TEXT("MoveY"),this,&AMyPlayerController::MoveY);
@@ -83,6 +84,8 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 	{
 		PossessedChar->GetCharacterMovement()->SetActive(true,true);
 		SetViewTargetWithBlend(PossessedChar,0.0f,VTBlend_Linear);
+		GetCharacter()->GetCharacterMovement()->AirControl = 0.70f;
+		GetCharacter()->GetCharacterMovement()->BrakingDecelerationFalling = 1000.0f;
 	}else
 	{
 		GEngine->AddOnScreenDebugMessage(-1,100.0f,FColor::Red,"FU");
@@ -117,6 +120,11 @@ void AMyPlayerController::JoyLookX(float mag)
 void AMyPlayerController::JoyLookY(float mag)
 {
 	
+}
+
+void AMyPlayerController::Jump()
+{
+	PossessedChar->Jump();
 }
 
 /**
