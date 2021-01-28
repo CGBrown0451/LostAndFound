@@ -7,11 +7,11 @@
 #include "Commission.h"
 #include "MyPlayerController.h"
 #include "ItemLibrary.h"
+#include "SpawnLocation.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/GameStateBase.h"
 #include "MyGameStateBase.generated.h"
 
-class ASpawnLocation;
 UENUM(BlueprintType)
 enum EGameState
 {
