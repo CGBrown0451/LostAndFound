@@ -114,12 +114,12 @@ void AMyPlayerController::MouseLookY(float mag)
 
 void AMyPlayerController::JoyLookX(float mag)
 {
-	
+	AddYawInput(mag);
 }
 
 void AMyPlayerController::JoyLookY(float mag)
 {
-	
+	AddPitchInput(mag);
 }
 
 void AMyPlayerController::Jump()
