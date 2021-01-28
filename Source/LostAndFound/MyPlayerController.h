@@ -39,6 +39,17 @@ public:
 	float HoverCoyoteTime;
 	UPROPERTY(BlueprintReadOnly)
 	UInteractInfo* LastHoverData;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool LaunchMode;
+	UPROPERTY(BlueprintReadOnly)
+	ACameraActor* LaunchCamera;
+	UFUNCTION(BlueprintCallable)
+	bool EnterLaunchMode();
+	UFUNCTION(BlueprintCallable)
+    bool LeaveLaunchMode();
+	UFUNCTION(BlueprintCallable)
+    void ToggleLaunchMode();
 	
 private:
 	//Setting up the Camera and Enabling the Character Movement
@@ -47,6 +58,7 @@ private:
 	virtual void SetupInputComponent() override;
 
 	virtual void Tick(float DeltaTime) override;
+	virtual void BeginPlay() override;
 
 	//Misc Movement Functions
 	UFUNCTION()

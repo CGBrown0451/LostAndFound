@@ -3,8 +3,13 @@
 
 #include "MyPlayerController.h"
 
+#include <future>
+
+
 
 #include "InteractInterface.h"
+#include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -31,6 +36,7 @@ void AMyPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 	InputComponent->BindAction(TEXT("Interact"), EInputEvent::IE_Pressed, this, &AMyPlayerController::Interact);
 	InputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AMyPlayerController::Jump);
+	InputComponent->BindAction(TEXT("Debug_LaunchMode"), EInputEvent::IE_Pressed, this, &AMyPlayerController::ToggleLaunchMode);
 	
 	InputComponent->BindAxis(TEXT("MoveX"),this,&AMyPlayerController::MoveX);
 	InputComponent->BindAxis(TEXT("MoveY"),this,&AMyPlayerController::MoveY);
@@ -76,6 +82,57 @@ void AMyPlayerController::Tick(float DeltaTime)
 	}
 }
 
+void AMyPlayerController::BeginPlay()
+{
+	LaunchCamera = GetWorld()->SpawnActor<ACameraActor>();
+	LaunchCamera->GetCameraComponent()->bConstrainAspectRatio = false;
+}
+
+bool AMyPlayerController::EnterLaunchMode()
+{
+	if (!LaunchMode)
+	{
+		LaunchCamera->SetActorTransform(PossessedChar->GetTransform());
+		LaunchCamera->AddActorLocalRotation(FRotator{-89.9f, 0, 0});
+		LaunchCamera->AddActorWorldOffset(FVector{0, 0, 5000.0f});
+		SetViewTargetWithBlend(LaunchCamera,1.0f,VTBlend_EaseInOut, 2.0f, true);
+		PossessedChar->DisableInput(this);
+		SetShowMouseCursor(true);
+		bShowMouseCursor = true;
+		bEnableClickEvents = true;
+		bEnableMouseOverEvents = true;
+		SetInputMode(FInputModeGameAndUI{});
+		LaunchMode = true;
+		return true;
+	}
+	return false;
+}
+
+bool AMyPlayerController::LeaveLaunchMode()
+{
+	if (LaunchMode)
+	{
+		LaunchMode = false;
+		PossessedChar->EnableInput(this);
+		SetViewTargetWithBlend(PossessedChar,1.0f,VTBlend_EaseInOut, 2.0f, true);
+		SetShowMouseCursor(false);
+		bShowMouseCursor = false;
+		bEnableClickEvents = false;
+		bEnableMouseOverEvents = false;
+		SetInputMode(FInputModeGameOnly{});
+		return true;
+	}
+	return false;
+}
+
+void AMyPlayerController::ToggleLaunchMode()
+{
+	if (LaunchMode)
+		LeaveLaunchMode();
+	else
+		EnterLaunchMode();
+}
+
 void AMyPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -94,37 +151,44 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 
 void AMyPlayerController::MoveX(float mag)
 {
-	PossessedChar->AddMovementInput(PossessedChar->GetActorRightVector() * mag, 1.0f, false);
+	if (!LaunchMode)
+		PossessedChar->AddMovementInput(PossessedChar->GetActorRightVector() * mag, 1.0f, false);
 }
 
 void AMyPlayerController::MoveY(float mag)
 {
-	PossessedChar->AddMovementInput(PossessedChar->GetActorForwardVector() * mag, 1.0f, false);
+	if (!LaunchMode)
+		PossessedChar->AddMovementInput(PossessedChar->GetActorForwardVector() * mag, 1.0f, false);
 }
 
 void AMyPlayerController::MouseLookX(float mag)
 {
-	AddYawInput(mag);
+	if (!LaunchMode)
+		AddYawInput(mag);
 }
 
 void AMyPlayerController::MouseLookY(float mag)
 {
-	AddPitchInput(mag);
+	if (!LaunchMode)
+		AddPitchInput(mag);
 }
 
 void AMyPlayerController::JoyLookX(float mag)
 {
-	AddYawInput(mag);
+	if (!LaunchMode)
+		AddYawInput(mag);
 }
 
 void AMyPlayerController::JoyLookY(float mag)
 {
-	AddPitchInput(mag);
+	if (!LaunchMode)
+		AddPitchInput(mag);
 }
 
 void AMyPlayerController::Jump()
 {
-	PossessedChar->Jump();
+	if (!LaunchMode)
+		PossessedChar->Jump();
 }
 
 /**
