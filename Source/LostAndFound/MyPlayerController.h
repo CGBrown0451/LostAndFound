@@ -50,6 +50,19 @@ public:
     bool LeaveLaunchMode();
 	UFUNCTION(BlueprintCallable)
     void ToggleLaunchMode();
+
+	UPROPERTY(BlueprintReadOnly)
+	bool DecidedToLaunch;
+	UPROPERTY(BlueprintReadOnly)
+	FVector LaunchStart;
+	UPROPERTY(BlueprintReadOnly)
+	FVector LaunchMidPoint;
+	UPROPERTY(BlueprintReadOnly)
+	FVector LaunchEnd;
+	UPROPERTY(BlueprintReadOnly)
+	float LaunchTime;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	uint8 LaunchState;
 	
 private:
 	//Setting up the Camera and Enabling the Character Movement
@@ -81,5 +94,7 @@ private:
 
 	UFUNCTION()
 	void Interact();
-	
+
+	UFUNCTION()
+    void Click();
 };
