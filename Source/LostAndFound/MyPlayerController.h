@@ -24,7 +24,9 @@ public:
 	AMyPlayerController();
 
 	ACharacter* PossessedChar;
-	
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	TSubclassOf<UUserWidget> HUDWidget;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TMap<FName, int32> ItemInventory;
 	UFUNCTION(BlueprintCallable)

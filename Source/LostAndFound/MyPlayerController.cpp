@@ -114,8 +114,11 @@ void AMyPlayerController::Tick(float DeltaTime)
 
 void AMyPlayerController::BeginPlay()
 {
+	Super::BeginPlay();
 	LaunchCamera = GetWorld()->SpawnActor<ACameraActor>();
 	LaunchCamera->GetCameraComponent()->bConstrainAspectRatio = false;
+
+	
 }
 
 bool AMyPlayerController::EnterLaunchMode()
