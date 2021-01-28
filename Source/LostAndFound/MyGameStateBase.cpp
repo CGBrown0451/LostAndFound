@@ -4,7 +4,9 @@
 #include "MyGameStateBase.h"
 
 
+
 #include "LostAndFoundGameModeBase.h"
+#include "EngineUtils.h"
 #include "MyPlayerController.h"
 
 AMyGameStateBase::AMyGameStateBase()
@@ -27,7 +29,15 @@ void AMyGameStateBase::BeginPlay()
 	
 	PlayerController->OnLaunchEnd.AddDynamic(this,&AMyGameStateBase::OnLanded);
 	PlayerController->OnLaunchStart.AddDynamic(this,&AMyGameStateBase::OnStartLaunch);
-	
+
+	for (TActorIterator<ASpawnLocation> It(GetWorld()); It; ++It)
+	{
+		SpawnLocations.Add(*It);
+	}
+
+	CommissionRows = CommissionsTable->GetRowNames();
+	UItemLibrary::QueueRangeOfValues(CommissionRandomPool, 0, CommissionRows.Num());
+	GenerateNewCommission();
 }
 
 void AMyGameStateBase::Tick(float DeltaSeconds)
@@ -85,6 +95,27 @@ bool AMyGameStateBase::GetNewCommission(UCommission* Commission)
 		return true;
 	}
 	return false;
+}
+
+void AMyGameStateBase::GenerateNewCommission()
+{
+	if (UItemLibrary::PoolLength(CommissionRandomPool) == 0)
+	{
+		UItemLibrary::QueueRangeOfValues(CommissionRandomPool, 0, CommissionRows.Num());
+	}
+	int32 ChosenRow;
+	bool Picked = UItemLibrary::PopValueFromPool(CommissionRandomPool, ChosenRow);
+	if (Picked)
+	{
+		auto FoundRow = CommissionsTable->FindRow<FCommissionData>(CommissionRows[ChosenRow], FString{TEXT("Generating new commission")});
+		if (FoundRow)
+		{
+			UCommission* Commission = NewObject<UCommission>(this);
+			Commission->RequiredItems = FoundRow->Requirements;
+			Commission->SetBonusTimeReward(FoundRow->BonusTime);
+			GetNewCommission(Commission);
+		}
+	}
 }
 
 bool AMyGameStateBase::TurnInCommission()

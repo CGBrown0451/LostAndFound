@@ -6,6 +6,7 @@
 
 #include "Commission.h"
 #include "MyPlayerController.h"
+#include "ItemLibrary.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/GameStateBase.h"
 #include "MyGameStateBase.generated.h"
@@ -51,10 +52,18 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TEnumAsByte<EGameState> GameState;
 
+	UPROPERTY(BlueprintReadOnly)
+	FCommissionData LastCommissionData;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UDataTable* CommissionsTable;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FName> CommissionRows;
+	UPROPERTY()
+	FRandomPool CommissionRandomPool;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UDataTable* ItemTable;
+	
 	UPROPERTY(BlueprintReadOnly)
 	TArray<ASpawnLocation*> SpawnLocations;
 
@@ -68,6 +77,8 @@ public:
 	//Gets a New Commission, returns whether the commission was added or not
 	UFUNCTION(BlueprintCallable)
 	bool GetNewCommission(UCommission* Commission);
+	UFUNCTION(BlueprintCallable)
+    void GenerateNewCommission();
 
 	//Turns in the current commission, returns whether it can be completed or not
 	bool TurnInCommission();

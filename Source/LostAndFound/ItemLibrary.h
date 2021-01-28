@@ -6,6 +6,7 @@
 
 #include "Engine/DataTable.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Containers/Queue.h"
 #include "ItemLibrary.generated.h"
 
 class UItem;
@@ -24,6 +25,14 @@ struct FItemData : public FTableRowBase
 };
 
 USTRUCT(BlueprintType)
+struct FRandomPool
+{
+	GENERATED_BODY()
+	TArray<int32> Pool;
+};
+
+
+USTRUCT(BlueprintType)
 struct FCommissionData : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -33,6 +42,8 @@ struct FCommissionData : public FTableRowBase
 	FString Description;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TMap<FName, int32> Requirements;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float BonusTime;
 };
 
 /**
@@ -42,5 +53,13 @@ UCLASS()
 class LOSTANDFOUND_API UItemLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-	
+	public:
+	UFUNCTION(BlueprintCallable)
+	static bool PeekFirstValueInPool(const FRandomPool& Pool, int32& FirstValue);
+	UFUNCTION(BlueprintCallable)
+    static bool PopValueFromPool(UPARAM(ref) FRandomPool& Pool, int32& FirstValue);
+	UFUNCTION(BlueprintCallable)
+    static int32 PoolLength(const FRandomPool& Pool);
+	UFUNCTION(BlueprintCallable)
+    static bool QueueRangeOfValues(UPARAM(ref) FRandomPool& Pool, int32 Min, int32 Max);
 };
