@@ -133,6 +133,11 @@ void AMyPlayerController::ToggleLaunchMode()
 		EnterLaunchMode();
 }
 
+void AMyPlayerController::GoHome()
+{
+	PossessedChar->TeleportTo(HomePosition.GetLocation(),HomePosition.Rotator());
+}
+
 void AMyPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -143,6 +148,7 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 		SetViewTargetWithBlend(PossessedChar,0.0f,VTBlend_Linear);
 		GetCharacter()->GetCharacterMovement()->AirControl = 0.70f;
 		GetCharacter()->GetCharacterMovement()->BrakingDecelerationFalling = 1000.0f;
+		HomePosition = PossessedChar->GetActorTransform();
 	}else
 	{
 		GEngine->AddOnScreenDebugMessage(-1,100.0f,FColor::Red,"FU");

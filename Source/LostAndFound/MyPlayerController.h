@@ -40,6 +40,9 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	UInteractInfo* LastHoverData;
 
+	UPROPERTY()
+	FTransform HomePosition;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool LaunchMode;
 	UPROPERTY(BlueprintReadOnly)
@@ -50,6 +53,9 @@ public:
     bool LeaveLaunchMode();
 	UFUNCTION(BlueprintCallable)
     void ToggleLaunchMode();
+	
+	UFUNCTION(BlueprintCallable)
+	void GoHome();
 	
 private:
 	//Setting up the Camera and Enabling the Character Movement
