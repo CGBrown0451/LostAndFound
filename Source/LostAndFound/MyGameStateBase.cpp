@@ -43,7 +43,7 @@ void AMyGameStateBase::AddExtraTime(float ExtraTime)
 
 bool AMyGameStateBase::GetNewCommission(UCommission* Commission)
 {
-	if (Commission == nullptr)
+	if (CurrentCommission == nullptr)
 	{
 		CurrentCommission = Commission;
 		return true;

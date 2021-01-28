@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 
 #include "Commission.h"
+#include "Engine/DataTable.h"
 #include "GameFramework/GameStateBase.h"
 #include "MyGameStateBase.generated.h"
 
+class ASpawnLocation;
 UENUM(BlueprintType)
 enum EGameState
 {
@@ -37,6 +39,13 @@ public:
 	float Score;
 	UPROPERTY(BlueprintReadOnly)
 	TEnumAsByte<EGameState> GameState;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UDataTable* CommissionsTable;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UDataTable* ItemTable;
+	UPROPERTY(BlueprintReadOnly)
+	TArray<ASpawnLocation*> SpawnLocations;
 
 	//Adds Extra Time
 	void AddExtraTime(float ExtraTime);

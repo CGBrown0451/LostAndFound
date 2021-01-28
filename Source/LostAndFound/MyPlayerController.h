@@ -12,6 +12,10 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryChanged);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLaunchWindupStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLaunchStart);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLaunchEnd);
+
 /**
  * 
  */
@@ -29,6 +33,7 @@ public:
 	TMap<FName, int32> ItemInventory;
 	UFUNCTION(BlueprintCallable)
 	void AddToInventory(UItem* Item);
+	UPROPERTY(BlueprintAssignable)
 	FInventoryChanged OnInventoryChange;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -66,6 +71,12 @@ public:
 	float LaunchTime;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	uint8 LaunchState;
+	UPROPERTY(BlueprintAssignable)
+	FOnLaunchWindupStart OnLaunchWindup;
+	UPROPERTY(BlueprintAssignable)
+	FOnLaunchStart OnLaunchStart;
+	UPROPERTY(BlueprintAssignable)
+	FOnLaunchEnd OnLaunchEnd;
 	
 	UFUNCTION(BlueprintCallable)
 	void GoHome();
