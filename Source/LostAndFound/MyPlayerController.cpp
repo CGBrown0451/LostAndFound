@@ -8,11 +8,13 @@
 
 
 #include "InteractInterface.h"
+#include "Blueprint/UserWidget.h"
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Widgets/SUserWidget.h"
 
 AMyPlayerController::AMyPlayerController()
 {
@@ -90,6 +92,7 @@ void AMyPlayerController::Tick(float DeltaTime)
 			{
 				LaunchTime = GetWorld()->GetTimeSeconds();
 				LaunchState = 2;
+				OnLaunchStart.Broadcast();
 			}
 			break;
 		case 2:
@@ -107,9 +110,10 @@ void AMyPlayerController::Tick(float DeltaTime)
         	    FMath::Lerp(FMath::Lerp(LaunchStart, LaunchMidPoint, Alpha),
         	    FMath::Lerp(LaunchMidPoint, LaunchEnd, Alpha), Alpha)
         	);
+			if (LaunchState == 0)
+				OnLaunchEnd.Broadcast();
 			break;
 	}
-	
 }
 
 void AMyPlayerController::BeginPlay()
@@ -272,6 +276,7 @@ void AMyPlayerController::Click()
 			FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(PossessedChar->GetActorLocation(), Result.Location);
 			SetControlRotation(PlayerRot);
 			LeaveLaunchMode();
+			OnLaunchWindup.Broadcast();
 		}
 	}
 }

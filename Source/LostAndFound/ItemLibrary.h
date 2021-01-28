@@ -23,6 +23,18 @@ struct FItemData : public FTableRowBase
 	FString Description;
 };
 
+USTRUCT(BlueprintType)
+struct FCommissionData : public FTableRowBase
+{
+	GENERATED_BODY()
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FName Title;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FString Description;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TMap<FName, int32> Requirements;
+};
+
 /**
  * 
  */
