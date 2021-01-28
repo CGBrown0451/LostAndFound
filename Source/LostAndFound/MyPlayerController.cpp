@@ -8,9 +8,29 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+AMyPlayerController::AMyPlayerController()
+{
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
+	HoverCoyoteTime = 0.3f;
+}
+
+void AMyPlayerController::AddToInventory(UItem* Item)
+{
+	auto Found = ItemInventory.Find(Item->ItemType);
+	if (Found)
+		ItemInventory.Add(Item->ItemType, *Found + 1);
+	else
+		ItemInventory.Add(Item->ItemType, 1);
+	OnInventoryChange.Broadcast();
+	UE_LOG(LogTemp, Display, TEXT("%s added to inventory"), *Item->ItemType.ToString());
+}
+
 void AMyPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
+	InputComponent->BindAction(TEXT("Interact"), EInputEvent::IE_Pressed, this, &AMyPlayerController::Interact);
+	
 	InputComponent->BindAxis(TEXT("MoveX"),this,&AMyPlayerController::MoveX);
 	InputComponent->BindAxis(TEXT("MoveY"),this,&AMyPlayerController::MoveY);
 
@@ -26,18 +46,32 @@ void AMyPlayerController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	FCollisionShape Shape = FCollisionShape::MakeBox(FVector{10, 10, 10});
 	FHitResult SweepResult;
-	FVector Start = PossessedChar->GetActorLocation();
+	FVector Start;
+	FRotator Rotation;
+	PossessedChar->GetActorEyesViewPoint(Start, Rotation);
 	FVector End = Start + PlayerCameraManager->GetActorForwardVector() * 300.0f;
-	// TODO: Doesn't work, look into it
-	bool HasHit = GetWorld()->SweepSingleByChannel(SweepResult, Start, End, FQuat::Identity, ECollisionChannel::ECC_EngineTraceChannel1, Shape);
+
+	// Check any sign of interact actors from eye of player to some distance away
+	bool HasHit = GetWorld()->SweepSingleByChannel(SweepResult, Start, End, Rotation.Quaternion(), ECollisionChannel::ECC_GameTraceChannel1, Shape);
 	if (HasHit)
 	{
+		// Actor must implement the interact interface
 		if (SweepResult.GetActor() && SweepResult.GetActor()->GetClass()->ImplementsInterface(UInteractInterface::StaticClass()))
 		{
+			// Retrieve interact info (e.g. tooltip)
 			UInteractInfo* Info = IInteractInterface::Execute_GetInteractInfo(SweepResult.GetActor());
 			if (Info)
-				UE_LOG(LogTemp, Display, TEXT("Hovering: %s"), *Info->Tooltip)
+			{
+				LastHoverTime = GetWorld()->GetTimeSeconds() + HoverCoyoteTime;
+				LastHoveredOverActor = SweepResult.GetActor();
+				LastHoverData = Info;
+			}
 		}
+	}
+	// Make hovered over actors expire after some time of not being hovered over
+	if (LastHoveredOverActor && LastHoverTime < GetWorld()->GetTimeSeconds())
+	{
+		LastHoveredOverActor = nullptr;
 	}
 }
 
@@ -85,6 +119,21 @@ void AMyPlayerController::JoyLookY(float mag)
 	
 }
 
+/**
+ * @brief Called when the player presses the interact button
+ */
 void AMyPlayerController::Interact()
 {
+	// Check if an interact actor has been hovered over recently
+	if (LastHoveredOverActor && LastHoverData && LastHoverData->CanInteract)
+	{
+		// Execute its interact
+		IInteractInterface::Execute_Interact(LastHoveredOverActor, this);
+		// Optionally destroy the actor if it signals it (e.g. picking up items)
+		if (LastHoverData->DestroyAfterInteract)
+		{
+			LastHoveredOverActor->Destroy();
+			LastHoveredOverActor = nullptr;
+		}
+	}
 }
