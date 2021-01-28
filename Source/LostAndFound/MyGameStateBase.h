@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "Commission.h"
+#include "MyPlayerController.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/GameStateBase.h"
 #include "MyGameStateBase.generated.h"
@@ -25,10 +26,20 @@ UCLASS()
 class LOSTANDFOUND_API AMyGameStateBase : public AGameStateBase
 {
 	GENERATED_BODY()
+public:
+	AMyGameStateBase();
+	
 private:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void InGameTick(float DeltaSeconds);
+	
+	UFUNCTION()
+	void OnStartLaunch();
+	UFUNCTION()
+	void OnLanded();
+
+	AMyPlayerController* PlayerController;
 	
 public:
 	UPROPERTY(BlueprintReadOnly)
@@ -52,7 +63,7 @@ public:
 
 	//Sets Game State
 	UFUNCTION(BlueprintCallable)
-	void SetGameState(TEnumAsByte<EGameState> NewGameState){GameState = NewGameState;}
+	void SetGameState(TEnumAsByte<EGameState> NewGameState);
 
 	//Gets a New Commission, returns whether the commission was added or not
 	UFUNCTION(BlueprintCallable)
