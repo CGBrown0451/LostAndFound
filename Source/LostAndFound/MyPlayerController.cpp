@@ -12,6 +12,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AMyPlayerController::AMyPlayerController()
 {
@@ -37,6 +38,7 @@ void AMyPlayerController::SetupInputComponent()
 	InputComponent->BindAction(TEXT("Interact"), EInputEvent::IE_Pressed, this, &AMyPlayerController::Interact);
 	InputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &AMyPlayerController::Jump);
 	InputComponent->BindAction(TEXT("Debug_LaunchMode"), EInputEvent::IE_Pressed, this, &AMyPlayerController::ToggleLaunchMode);
+	InputComponent->BindAction(TEXT("Click"), EInputEvent::IE_Pressed, this, &AMyPlayerController::Click);
 	
 	InputComponent->BindAxis(TEXT("MoveX"),this,&AMyPlayerController::MoveX);
 	InputComponent->BindAxis(TEXT("MoveY"),this,&AMyPlayerController::MoveY);
@@ -80,6 +82,34 @@ void AMyPlayerController::Tick(float DeltaTime)
 	{
 		LastHoveredOverActor = nullptr;
 	}
+	// Launch states
+	switch(LaunchState)
+	{
+		case 1:
+			if (LaunchTime + 1.4f <= GetWorld()->GetTimeSeconds())
+			{
+				LaunchTime = GetWorld()->GetTimeSeconds();
+				LaunchState = 2;
+			}
+			break;
+		case 2:
+			if (LaunchTime + 1.8f > GetWorld()->GetTimeSeconds())
+			{
+				GetCharacter()->GetCharacterMovement()->GravityScale = 0.0f;
+			}
+			else
+			{
+				GetCharacter()->GetCharacterMovement()->GravityScale = 1.0f;
+				LaunchState = 0;
+			}
+			float Alpha = FMath::Clamp((GetWorld()->GetTimeSeconds() - LaunchTime) / 1.8f, 0.0f, 1.0f);
+			PossessedChar->SetActorLocation(
+        	    FMath::Lerp(FMath::Lerp(LaunchStart, LaunchMidPoint, Alpha),
+        	    FMath::Lerp(LaunchMidPoint, LaunchEnd, Alpha), Alpha)
+        	);
+			break;
+	}
+	
 }
 
 void AMyPlayerController::BeginPlay()
@@ -94,8 +124,8 @@ bool AMyPlayerController::EnterLaunchMode()
 	{
 		LaunchCamera->SetActorTransform(PossessedChar->GetTransform());
 		LaunchCamera->AddActorLocalRotation(FRotator{-89.9f, 0, 0});
-		LaunchCamera->AddActorWorldOffset(FVector{0, 0, 5000.0f});
-		SetViewTargetWithBlend(LaunchCamera,1.0f,VTBlend_EaseInOut, 2.0f, true);
+		LaunchCamera->AddActorWorldOffset(FVector{0, 0, 10000.0f});
+		SetViewTargetWithBlend(LaunchCamera,0.5f,VTBlend_EaseInOut, 2.0f, true);
 		PossessedChar->DisableInput(this);
 		SetShowMouseCursor(true);
 		bShowMouseCursor = true;
@@ -114,7 +144,7 @@ bool AMyPlayerController::LeaveLaunchMode()
 	{
 		LaunchMode = false;
 		PossessedChar->EnableInput(this);
-		SetViewTargetWithBlend(PossessedChar,1.0f,VTBlend_EaseInOut, 2.0f, true);
+		SetViewTargetWithBlend(PossessedChar,0.5f,VTBlend_EaseInOut, 2.0f, true);
 		SetShowMouseCursor(false);
 		bShowMouseCursor = false;
 		bEnableClickEvents = false;
@@ -127,10 +157,13 @@ bool AMyPlayerController::LeaveLaunchMode()
 
 void AMyPlayerController::ToggleLaunchMode()
 {
-	if (LaunchMode)
-		LeaveLaunchMode();
-	else
-		EnterLaunchMode();
+	if (LaunchState == 0)
+	{
+		if (LaunchMode)
+			LeaveLaunchMode();
+		else
+			EnterLaunchMode();
+	}
 }
 
 void AMyPlayerController::GoHome()
@@ -157,13 +190,13 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 
 void AMyPlayerController::MoveX(float mag)
 {
-	if (!LaunchMode)
+	if (!LaunchMode && LaunchState == 0)
 		PossessedChar->AddMovementInput(PossessedChar->GetActorRightVector() * mag, 1.0f, false);
 }
 
 void AMyPlayerController::MoveY(float mag)
 {
-	if (!LaunchMode)
+	if (!LaunchMode && LaunchState == 0)
 		PossessedChar->AddMovementInput(PossessedChar->GetActorForwardVector() * mag, 1.0f, false);
 }
 
@@ -181,19 +214,19 @@ void AMyPlayerController::MouseLookY(float mag)
 
 void AMyPlayerController::JoyLookX(float mag)
 {
-	if (!LaunchMode)
+	if (!LaunchMode && LaunchState == 0)
 		AddYawInput(mag);
 }
 
 void AMyPlayerController::JoyLookY(float mag)
 {
-	if (!LaunchMode)
+	if (!LaunchMode && LaunchState == 0)
 		AddPitchInput(mag);
 }
 
 void AMyPlayerController::Jump()
 {
-	if (!LaunchMode)
+	if (!LaunchMode && LaunchState == 0)
 		PossessedChar->Jump();
 }
 
@@ -212,6 +245,30 @@ void AMyPlayerController::Interact()
 		{
 			LastHoveredOverActor->Destroy();
 			LastHoveredOverActor = nullptr;
+		}
+	}
+}
+
+void AMyPlayerController::Click()
+{
+	if (LaunchMode)
+	{
+		FHitResult Result;
+		bool HasHit = GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery3, true, Result);
+		if (HasHit)
+		{
+			LaunchStart = PossessedChar->GetActorLocation();
+			FVector EyeLocation;
+			FRotator EyeRotation;
+			PossessedChar->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+			LaunchEnd = Result.Location + EyeLocation - PossessedChar->GetActorLocation();
+			LaunchMidPoint = LaunchStart / 2 + LaunchEnd / 2 + FVector::UpVector * 3000.0f;
+			DecidedToLaunch = true;
+			LaunchTime = GetWorld()->GetTimeSeconds();
+			LaunchState = 1;
+			FRotator PlayerRot = UKismetMathLibrary::FindLookAtRotation(PossessedChar->GetActorLocation(), Result.Location);
+			SetControlRotation(PlayerRot);
+			LeaveLaunchMode();
 		}
 	}
 }
