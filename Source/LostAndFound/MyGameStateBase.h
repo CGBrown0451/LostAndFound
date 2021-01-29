@@ -67,6 +67,8 @@ public:
 	FOnRecievedCommission RecievedCommission;
 
 	UPROPERTY(BlueprintReadOnly)
+	bool AutoGenerate = true;
+	UPROPERTY(BlueprintReadOnly)
 	FCommissionData LastCommissionData;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UDataTable* CommissionsTable;
@@ -97,6 +99,7 @@ public:
     void SpawnItemsFromCommission();
 
 	//Turns in the current commission, returns whether it can be completed or not
+	UFUNCTION(BlueprintCallable)
 	bool TurnInCommission();
 	
 };

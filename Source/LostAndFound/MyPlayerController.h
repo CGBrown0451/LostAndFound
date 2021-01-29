@@ -15,6 +15,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLaunchWindupStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLaunchStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLaunchEnd);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNewCommission);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCompletedCommission);
 
 /**
  * 
@@ -79,6 +81,11 @@ public:
 	FOnLaunchStart OnLaunchStart;
 	UPROPERTY(BlueprintAssignable)
 	FOnLaunchEnd OnLaunchEnd;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnNewCommission OnNewCommission;
+	UPROPERTY(BlueprintAssignable)
+	FOnCompletedCommission OnCompletedCommission;
 	
 	UFUNCTION(BlueprintCallable)
 	void GoHome();

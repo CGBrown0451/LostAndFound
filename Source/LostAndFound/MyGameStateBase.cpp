@@ -124,6 +124,7 @@ void AMyGameStateBase::GenerateNewCommission()
 			Commission->SetBonusTimeReward(FoundRow->BonusTime);
 			GetNewCommission(Commission);
 			SpawnItemsFromCommission();
+			PlayerController->OnNewCommission.Broadcast();
 		}
 	}
 }
@@ -172,6 +173,11 @@ bool AMyGameStateBase::TurnInCommission()
 		AddExtraTime(CurrentCommission->GetBonusTimeReward());
 		//TODO: Score???
 		CurrentCommission = nullptr;
+		if (AutoGenerate)
+		{
+			GenerateNewCommission();
+		}
+		PlayerController->OnCompletedCommission.Broadcast();
 		return true;
 	}
 	return false;
