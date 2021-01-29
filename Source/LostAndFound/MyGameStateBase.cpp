@@ -100,7 +100,6 @@ bool AMyGameStateBase::GetNewCommission(UCommission* Commission)
 	if (CurrentCommission == nullptr)
 	{
 		CurrentCommission = Commission;
-		RecievedCommission.Broadcast();
 		return true;
 	}
 	return false;
@@ -164,6 +163,7 @@ bool AMyGameStateBase::TurnInCommission()
 	AMyPlayerController* Player = Cast<AMyPlayerController>(GetWorld()->GetFirstPlayerController());
 	if(!Player)
 	{
+		PlayerController->OnSubmitCommission.Broadcast(false);
 		return false;
 	}
 	
@@ -177,9 +177,10 @@ bool AMyGameStateBase::TurnInCommission()
 		{
 			GenerateNewCommission();
 		}
-		PlayerController->OnCompletedCommission.Broadcast();
+		PlayerController->OnSubmitCommission.Broadcast(true);
 		return true;
 	}
+	PlayerController->OnSubmitCommission.Broadcast(false);
 	return false;
 	
 }

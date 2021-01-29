@@ -23,7 +23,6 @@ enum EGameState
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameStateChanged, TEnumAsByte<EGameState>, NewState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameTimeTick, int32, Time);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRecievedCommission);
 
 /**
  * 
@@ -63,8 +62,6 @@ public:
 	FOnGameStateChanged GameStateChanged;
 	UPROPERTY(BlueprintAssignable)
 	FOnGameTimeTick GameTimeTick;
-	UPROPERTY(BlueprintAssignable)
-	FOnRecievedCommission RecievedCommission;
 
 	UPROPERTY(BlueprintReadOnly)
 	bool AutoGenerate = true;
