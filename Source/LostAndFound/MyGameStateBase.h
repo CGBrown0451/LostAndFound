@@ -53,6 +53,8 @@ public:
 	TEnumAsByte<EGameState> GameState;
 
 	UPROPERTY(BlueprintReadOnly)
+	bool AutoGenerate = true;
+	UPROPERTY(BlueprintReadOnly)
 	FCommissionData LastCommissionData;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UDataTable* CommissionsTable;
