@@ -73,9 +73,14 @@ void AMyPlayerController::Tick(float DeltaTime)
 			UInteractInfo* Info = IInteractInterface::Execute_GetInteractInfo(SweepResult.GetActor());
 			if (Info)
 			{
+				bool Begin = false;
+				if (LastHoveredOverActor == nullptr)
+					Begin = true;
 				LastHoverTime = GetWorld()->GetTimeSeconds() + HoverCoyoteTime;
 				LastHoveredOverActor = SweepResult.GetActor();
 				LastHoverData = Info;
+				if (Begin)
+					OnHoverBegin.Broadcast();
 			}
 		}
 	}
@@ -83,6 +88,7 @@ void AMyPlayerController::Tick(float DeltaTime)
 	if (LastHoveredOverActor && LastHoverTime < GetWorld()->GetTimeSeconds())
 	{
 		LastHoveredOverActor = nullptr;
+		OnHoverEnd.Broadcast();
 	}
 	// Launch states
 	switch(LaunchState)

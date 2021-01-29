@@ -17,6 +17,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLaunchStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLaunchEnd);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNewCommission);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCompletedCommission);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHoverBegin);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHoverEnd);
 
 /**
  * 
@@ -86,6 +88,11 @@ public:
 	FOnNewCommission OnNewCommission;
 	UPROPERTY(BlueprintAssignable)
 	FOnCompletedCommission OnCompletedCommission;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnHoverBegin OnHoverBegin;
+	UPROPERTY(BlueprintAssignable)
+	FOnHoverEnd OnHoverEnd;
 	
 	UFUNCTION(BlueprintCallable)
 	void GoHome();
