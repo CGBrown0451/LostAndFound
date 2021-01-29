@@ -12,6 +12,7 @@ UCLASS()
 class LOSTANDFOUND_API ASpawnLocation : public AActor
 {
 	GENERATED_BODY()
+	public:
 	UPROPERTY(VisibleAnywhere)
 	TWeakObjectPtr<AWorldItem> OwnedItem;
 	
