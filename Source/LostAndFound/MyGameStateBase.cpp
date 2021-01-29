@@ -114,8 +114,39 @@ void AMyGameStateBase::GenerateNewCommission()
 			Commission->RequiredItems = FoundRow->Requirements;
 			Commission->SetBonusTimeReward(FoundRow->BonusTime);
 			GetNewCommission(Commission);
+			SpawnItemsFromCommission();
 		}
 	}
+}
+
+void AMyGameStateBase::SpawnItemsFromCommission()
+{
+	int32 AttemptsMax = 400.0f;
+	int32 Attempts = 0;
+	for (auto& Item : CurrentCommission->RequiredItems)
+	{
+		int32 SpawnAmount = Item.Value;
+		for (int32 i = 0; i < SpawnAmount; ++i)
+		{
+			for (int32 j = 0; j < 10; ++j)
+			{
+				int32 Chosen = FMath::RandRange(0, SpawnLocations.Num() - 1);
+				if (!SpawnLocations[Chosen]->OwnedItem.Get())
+				{
+					AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>(SpawnLocations[Chosen]->GetActorLocation(), SpawnLocations[Chosen]->GetActorRotation());
+					WorldItem->CreateInternalItemFromName(ItemTable, Item.Key);
+					SpawnLocations[Chosen]->OwnedItem = WorldItem;
+					break;
+				}
+				++Attempts;
+			}
+			if (Attempts >= AttemptsMax)
+				break;
+		}
+		if (Attempts >= AttemptsMax)
+			break;
+	}
+	check(Attempts < AttemptsMax);
 }
 
 bool AMyGameStateBase::TurnInCommission()

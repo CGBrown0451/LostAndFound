@@ -43,7 +43,7 @@ private:
 	AMyPlayerController* PlayerController;
 	
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UCommission* CurrentCommission;
 	UPROPERTY(BlueprintReadOnly)
 	float TimeLeft;
@@ -79,6 +79,8 @@ public:
 	bool GetNewCommission(UCommission* Commission);
 	UFUNCTION(BlueprintCallable)
     void GenerateNewCommission();
+	UFUNCTION(BlueprintCallable)
+    void SpawnItemsFromCommission();
 
 	//Turns in the current commission, returns whether it can be completed or not
 	bool TurnInCommission();
