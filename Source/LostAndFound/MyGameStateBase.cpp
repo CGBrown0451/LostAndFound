@@ -60,10 +60,13 @@ void AMyGameStateBase::Tick(float DeltaSeconds)
 void AMyGameStateBase::InGameTick(float DeltaSeconds)
 {
 	TimeLeft -= DeltaSeconds;
-	if(FMath::IsNearlyZero(FMath::Fmod(DeltaSeconds,1.0f),DeltaSeconds))
+	float Mod = FMath::Fmod(TimeLeft,1.0f);
+	GEngine->AddOnScreenDebugMessage(-1,DeltaSeconds,FColor::Blue,FString::SanitizeFloat(Mod));
+	if(Mod > ModTime)
 	{
 		GameTimeTick.Broadcast(FMath::Floor(TimeLeft));
 	}
+	ModTime = Mod;
 	Score += DeltaSeconds * 10;
 	if(TimeLeft <= 0.0f)
 	{
@@ -97,6 +100,7 @@ bool AMyGameStateBase::GetNewCommission(UCommission* Commission)
 	if (CurrentCommission == nullptr)
 	{
 		CurrentCommission = Commission;
+		RecievedCommission.Broadcast();
 		return true;
 	}
 	return false;

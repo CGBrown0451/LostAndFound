@@ -23,6 +23,7 @@ enum EGameState
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameStateChanged, TEnumAsByte<EGameState>, NewState);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameTimeTick, int32, Time);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRecievedCommission);
 
 /**
  * 
@@ -45,6 +46,8 @@ private:
 	void OnLanded();
 
 	AMyPlayerController* PlayerController;
+
+	float ModTime = 1.0f;
 	
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -60,6 +63,8 @@ public:
 	FOnGameStateChanged GameStateChanged;
 	UPROPERTY(BlueprintAssignable)
 	FOnGameTimeTick GameTimeTick;
+	UPROPERTY(BlueprintAssignable)
+	FOnRecievedCommission RecievedCommission;
 
 	UPROPERTY(BlueprintReadOnly)
 	FCommissionData LastCommissionData;
