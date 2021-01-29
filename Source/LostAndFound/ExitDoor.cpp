@@ -28,7 +28,8 @@ void AExitDoor::BeginPlay()
 
 	GameState = Cast<AMyGameStateBase>(GetWorld()->GetGameState());
 	InteractInfo = NewObject<UInteractInfo>(this);
-	
+	InteractInfo->HasTooltip = true;
+	InteractInfo->Tooltip = FString{TEXT("Go back to the main area")};
 }
 
 // Called every frame

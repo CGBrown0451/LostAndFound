@@ -26,7 +26,8 @@ void AWorldItem::BeginPlay()
 	InteractInfo = NewObject<UInteractInfo>(this);
 	if (LastDataFound)
 	{
-		InteractInfo->Tooltip = LastDataFound->DisplayName.ToString();
+		InteractInfo->HasTooltip = true;
+		InteractInfo->Tooltip = FString{TEXT("Pickup ")} + LastDataFound->DisplayName.ToString();
 	}
 }
 
