@@ -36,7 +36,7 @@ void AMyGameStateBase::BeginPlay()
 	}
 
 	CommissionRows = CommissionsTable->GetRowNames();
-	UItemLibrary::QueueRangeOfValues(CommissionRandomPool, 0, CommissionRows.Num());
+	UItemLibrary::QueueRangeOfValues(CommissionRandomPool, 0, CommissionRows.Num() - 1);
 	GenerateNewCommission();
 }
 
@@ -101,7 +101,7 @@ void AMyGameStateBase::GenerateNewCommission()
 {
 	if (UItemLibrary::PoolLength(CommissionRandomPool) == 0)
 	{
-		UItemLibrary::QueueRangeOfValues(CommissionRandomPool, 0, CommissionRows.Num());
+		UItemLibrary::QueueRangeOfValues(CommissionRandomPool, 0, CommissionRows.Num() - 1);
 	}
 	int32 ChosenRow;
 	bool Picked = UItemLibrary::PopValueFromPool(CommissionRandomPool, ChosenRow);

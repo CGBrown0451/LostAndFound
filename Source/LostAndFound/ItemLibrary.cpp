@@ -30,14 +30,14 @@ bool UItemLibrary::QueueRangeOfValues(UPARAM(ref) FRandomPool& Pool, int32 Min, 
 {
 	check(Min <= Max);
 	TArray<int32> Arr;
-	Arr.Init(0, Max - Min);
+	Arr.Init(0, Max - Min + 1);
 	for (int32 i = 0; i <= Max - Min; ++i)
 	{
 		Arr[i] = Min + i;
 	}
 	while (Arr.Num() > 0)
 	{
-		int32 Chosen = FMath::RandRange(0, Arr.Num());
+		int32 Chosen = FMath::RandRange(0, Arr.Num() - 1);
 		Pool.Pool.Add(Arr[Chosen]);
 		Arr.RemoveAt(Chosen);
 	}
