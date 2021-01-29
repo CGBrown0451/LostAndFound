@@ -18,7 +18,7 @@ AMyGameStateBase::AMyGameStateBase()
 void AMyGameStateBase::BeginPlay()
 {
 	
-	GameState = GameState_MailRoom;
+	SetGameState(GameState_MailRoom);
 	const ALostAndFoundGameModeBase* GameModeBase = Cast<ALostAndFoundGameModeBase>(GetDefaultGameMode());
 	if(GameModeBase)
 	{
@@ -28,7 +28,7 @@ void AMyGameStateBase::BeginPlay()
 	PlayerController = Cast<AMyPlayerController>(GetWorld()->GetFirstPlayerController());
 	
 	PlayerController->OnLaunchEnd.AddDynamic(this,&AMyGameStateBase::OnLanded);
-	PlayerController->OnLaunchStart.AddDynamic(this,&AMyGameStateBase::OnStartLaunch);
+	PlayerController->OnLaunchWindup.AddDynamic(this,&AMyGameStateBase::OnStartLaunch);
 
 	for (TActorIterator<ASpawnLocation> It(GetWorld()); It; ++It)
 	{
@@ -60,10 +60,14 @@ void AMyGameStateBase::Tick(float DeltaSeconds)
 void AMyGameStateBase::InGameTick(float DeltaSeconds)
 {
 	TimeLeft -= DeltaSeconds;
+	if(FMath::IsNearlyZero(FMath::Fmod(DeltaSeconds,1.0f),DeltaSeconds))
+	{
+		GameTimeTick.Broadcast(FMath::Floor(TimeLeft));
+	}
 	Score += DeltaSeconds * 10;
 	if(TimeLeft <= 0.0f)
 	{
-		GameState = GameState_PostGame;
+		SetGameState(GameState_PostGame);
 	}
 }
 
@@ -85,6 +89,7 @@ void AMyGameStateBase::AddExtraTime(float ExtraTime)
 void AMyGameStateBase::SetGameState(TEnumAsByte<EGameState> NewGameState)
 {
 	GameState = NewGameState;
+	GameStateChanged.Broadcast(NewGameState);
 }
 
 bool AMyGameStateBase::GetNewCommission(UCommission* Commission)

@@ -20,6 +20,10 @@ enum EGameState
 	GameState_InGame,
 	GameState_PostGame
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameStateChanged, TEnumAsByte<EGameState>, NewState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameTimeTick, int32, Time);
+
 /**
  * 
  */
@@ -51,6 +55,11 @@ public:
 	float Score;
 	UPROPERTY(BlueprintReadOnly)
 	TEnumAsByte<EGameState> GameState;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnGameStateChanged GameStateChanged;
+	UPROPERTY(BlueprintAssignable)
+	FOnGameTimeTick GameTimeTick;
 
 	UPROPERTY(BlueprintReadOnly)
 	bool AutoGenerate = true;
