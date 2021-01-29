@@ -8,7 +8,6 @@
 #include "LostAndFoundGameModeBase.h"
 #include "EngineUtils.h"
 #include "MyPlayerController.h"
-#include "../../../UE_4.26/Engine/Plugins/Importers/USDImporter/Source/ThirdParty/USD/include/boost/python/proxy.hpp"
 
 AMyGameStateBase::AMyGameStateBase()
 {
