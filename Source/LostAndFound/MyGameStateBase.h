@@ -94,6 +94,7 @@ public:
     void SpawnItemsFromCommission();
 
 	//Turns in the current commission, returns whether it can be completed or not
+	UFUNCTION(BlueprintCallable)
 	bool TurnInCommission();
 	
 };
