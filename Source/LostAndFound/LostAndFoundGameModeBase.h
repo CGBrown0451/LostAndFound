@@ -15,6 +15,6 @@ class LOSTANDFOUND_API ALostAndFoundGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere)
-	float BeginningTime = 30.0f;
+	float BeginningTime = 100.0f;
 	
 };
