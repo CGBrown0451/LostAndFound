@@ -32,6 +32,7 @@ public:
 
 	AMyPlayerController();
 
+	UPROPERTY(BlueprintReadOnly)
 	ACharacter* PossessedChar;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
