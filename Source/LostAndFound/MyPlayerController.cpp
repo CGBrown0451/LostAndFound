@@ -258,6 +258,7 @@ void AMyPlayerController::Interact()
 		{
 			LastHoveredOverActor->Destroy();
 			LastHoveredOverActor = nullptr;
+			OnHoverEnd.Broadcast();
 		}
 	}
 }

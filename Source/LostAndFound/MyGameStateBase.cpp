@@ -132,6 +132,15 @@ void AMyGameStateBase::SpawnItemsFromCommission()
 {
 	int32 AttemptsMax = 400.0f;
 	int32 Attempts = 0;
+	// Remove all items
+	for (int32 i = 0; i < SpawnLocations.Num() - 1; ++i)
+	{
+		if (SpawnLocations[i]->OwnedItem.Get())
+		{
+			SpawnLocations[i]->OwnedItem.Get()->Destroy();
+			SpawnLocations[i]->OwnedItem = nullptr;
+		}
+	}
 	for (auto& Item : CurrentCommission->RequiredItems)
 	{
 		int32 SpawnAmount = Item.Value;
@@ -144,6 +153,12 @@ void AMyGameStateBase::SpawnItemsFromCommission()
 				{
 					AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>(SpawnLocations[Chosen]->GetActorLocation(), SpawnLocations[Chosen]->GetActorRotation());
 					WorldItem->CreateInternalItemFromName(ItemTable, Item.Key);
+					WorldItem->InteractInfo = NewObject<UInteractInfo>(this);
+					if (WorldItem->LastDataFound)
+					{
+						WorldItem->InteractInfo->HasTooltip = true;
+						WorldItem->InteractInfo->Tooltip = FString{TEXT("Pickup ")} + WorldItem->LastDataFound->DisplayName.ToString();
+					}
 					SpawnLocations[Chosen]->OwnedItem = WorldItem;
 					break;
 				}
@@ -154,6 +169,24 @@ void AMyGameStateBase::SpawnItemsFromCommission()
 		}
 		if (Attempts >= AttemptsMax)
 			break;
+	}
+	// pick a few random spots to spawn random items
+	auto RowNames = ItemTable->GetRowNames();
+	for (int32 i = 0; i < 4; ++i)
+	{
+		int32 Chosen = FMath::RandRange(0, SpawnLocations.Num() - 1);
+		if (!SpawnLocations[Chosen]->OwnedItem.Get())
+		{
+			AWorldItem* WorldItem = GetWorld()->SpawnActor<AWorldItem>(SpawnLocations[Chosen]->GetActorLocation(), SpawnLocations[Chosen]->GetActorRotation());
+			WorldItem->CreateInternalItemFromName(ItemTable, RowNames[FMath::RandRange(0, RowNames.Num() - 1)]);
+			WorldItem->InteractInfo = NewObject<UInteractInfo>(this);
+			if (WorldItem->LastDataFound)
+			{
+				WorldItem->InteractInfo->HasTooltip = true;
+				WorldItem->InteractInfo->Tooltip = FString{TEXT("Pickup ")} + WorldItem->LastDataFound->DisplayName.ToString();
+			}
+			SpawnLocations[Chosen]->OwnedItem = WorldItem;
+		}
 	}
 	check(Attempts < AttemptsMax);
 }
